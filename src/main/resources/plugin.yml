@@ -1,0 +1,12 @@
+name: WeAreWerewolf
+version: ${project.version}
+main: network.kze.werewolf.Werewolf
+description: GamePlugin
+author: xkaedex
+depend: [ProtocolLib]
+commands:
+  ww:
+    usage: /<command>
+    description: debug.
+
+api-version: 1.13
