@@ -2,9 +2,14 @@ package network.kze.werewolf.game.player;
 
 import lombok.Getter;
 import lombok.NonNull;
+import network.kze.werewolf.Werewolf;
 import org.bukkit.entity.Player;
 
 public abstract class GamePlayer {
+
+    protected final Werewolf plugin = Werewolf.getInstance();
+
+    @Getter public String yourName;
 
     @Getter protected final Player player;
 
@@ -18,5 +23,7 @@ public abstract class GamePlayer {
 
 
     public abstract void active();
+
+    public abstract void sendBar();
 
 }

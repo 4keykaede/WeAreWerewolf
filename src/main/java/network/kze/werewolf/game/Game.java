@@ -24,6 +24,12 @@ public class Game {
     private final Map<UUID, Player> joinPlayers = new HashMap<>();
     private final Map<UUID, GamePlayer> gamePlayers = new HashMap<>();
 
+    public int villagerNum = 0;
+    public int yogenNum = 0;
+    public int reibaiNum = 0;
+    public int kyojinNum = 0;
+    public int jhinroNum = 0;
+
     public Game(GameManager gameManager) {
         this.gameManager = gameManager;
     }
@@ -84,6 +90,10 @@ public class Game {
 
     public Collection<GamePlayer> getWolfs() {
         return getGamePlayers().stream().filter(gamePlayer -> gamePlayer.isWolf && !gamePlayer.isDead && !gamePlayer.isNoCount).collect(Collectors.toList());
+    }
+
+    public Collection<GamePlayer> getKyojin() {
+        return getGamePlayers().stream().filter(gamePlayer -> gamePlayer.isWolf && !gamePlayer.isDead && gamePlayer.isNoCount).collect(Collectors.toList());
     }
 
 

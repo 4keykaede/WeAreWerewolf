@@ -50,6 +50,8 @@ public class GameTask {
 
         //ゲーム中
         if (gameManager.getGame().getPhase() == Game.Phase.PLAYING) {
+            gameManager.getGame().getGamePlayers().forEach(gamePlayer -> gamePlayer.sendBar());
+
             GameHelper.checkGameEnd(gameManager.getGame());
             if (gameManager.getGame().getResult() == Game.Result.VILLAGERS_WIN) {
                 villagersWin();
@@ -68,18 +70,70 @@ public class GameTask {
     private void castingPlayer() {
         List<Player> players = new ArrayList<>(gameManager.getGame().getJoinPlayers());
         Collections.shuffle(players, new Random());
-        GamePlayer jhinro = new WWJinro(players.get(0));
-        GamePlayer kyojin = new WWKyojin(players.get(1));
-        WWVillager villager = new WWVillager(players.get(2));
 
-        jhinro.active();
-        kyojin.active();
-        villager.setJob(WWVillager.Job.REIBAI);
-        villager.active();
+        //ここどうにかしたい
+        List<GamePlayer> gamePlayers = new ArrayList<>();
+        int phase = 0;
+        int count = 0;
+        for (int i = 0; i < players.size(); i++) {
+            if (phase == 0) {
+                if (count == gameManager.getGame().getVillagerNum()) {
+                    phase ++;
+                    count = 0;
+                } else {
+                    WWVillager villager = new WWVillager(players.get(i));
+                    gamePlayers.add(villager);
+                    count ++;
+                }
+            }
+            if (phase == 1) {
+                if (count == gameManager.getGame().getYogenNum()) {
+                    phase ++;
+                    count = 0;
+                } else {
+                    WWVillager yogen = new WWVillager(players.get(i));
+                    yogen.setJob(WWVillager.Job.YOGEN);
+                    gamePlayers.add(yogen);
+                    count ++;
+                }
+            }
+            if (phase == 2) {
+                if (count == gameManager.getGame().getReibaiNum()) {
+                    phase ++;
+                    count = 0;
+                } else {
+                    WWVillager reibai = new WWVillager(players.get(i));
+                    reibai.setJob(WWVillager.Job.REIBAI);
+                    gamePlayers.add(reibai);
+                    count ++;
+                }
+            }
+            if (phase == 3) {
+                if (count == gameManager.getGame().getKyojinNum()) {
+                    phase ++;
+                    count = 0;
+                } else {
+                    GamePlayer kyojin = new WWKyojin(players.get(i));
+                    gamePlayers.add(kyojin);
+                    count ++;
+                }
+            }
+            if (phase == 4) {
+                if (count == gameManager.getGame().getJhinroNum()) {
+                    phase ++;
+                    count = 0;
+                } else {
+                    GamePlayer jinro = new WWJinro(players.get(i));
+                    gamePlayers.add(jinro);
+                    count ++;
+                }
+            }
+        }
 
-        gameManager.getGame().addGamePlayer(jhinro);
-        gameManager.getGame().addGamePlayer(kyojin);
-        gameManager.getGame().addGamePlayer(villager);
+        gamePlayers.forEach(player -> {
+            player.active();
+            gameManager.getGame().addGamePlayer(player);
+        });
     }
 
     private void villagersWin() {

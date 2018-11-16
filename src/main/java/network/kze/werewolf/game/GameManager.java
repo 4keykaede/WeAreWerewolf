@@ -29,6 +29,7 @@ public class GameManager {
     public void startGame() {
         Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GRAY + "間もなくゲームが開始されます。");
         getGame().setPhase(Game.Phase.PRESTATE);
+        GameHelper.tpStage(this);
     }
 
     public void resetGame() {
@@ -44,6 +45,18 @@ public class GameManager {
         this.gameTask = null;
 
         setUp();
+    }
+
+    public boolean isGame() {
+        if (plugin.getGameManager().getGame() == null) {
+            return false;
+        }
+
+        if (plugin.getGameManager().getGame().getPhase() != Game.Phase.PLAYING) {
+            return false;
+        }
+
+        return true;
     }
 
     void setUp() {
