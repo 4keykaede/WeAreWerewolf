@@ -3,6 +3,8 @@ package network.kze.werewolf.game;
 import lombok.Data;
 import network.kze.werewolf.game.player.GamePlayer;
 import network.kze.werewolf.game.player.WWVillager;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -44,6 +46,7 @@ public class Game {
 
     public void leave(Player player) {
         player.getInventory().clear();
+        player.setGameMode(GameMode.SURVIVAL);
 
         joinPlayers.remove(player.getUniqueId());
         gamePlayers.remove(player.getUniqueId());
@@ -84,16 +87,39 @@ public class Game {
         return gamePlayers.values();
     }
 
-    public Collection<GamePlayer> getVillagers() {
+    public Collection<GamePlayer> getVillagers(boolean netabare) {
+        if (netabare) {
+            return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isNoCount).collect(Collectors.toList());
+        }
         return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isDead && !gamePlayer.isNoCount).collect(Collectors.toList());
     }
 
-    public Collection<GamePlayer> getWolfs() {
+    public Collection<GamePlayer> getYogens(boolean netabare) {
+        if (netabare) {
+            return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isNoCount && gamePlayer.getYourName().equals(ChatColor.GOLD + "預言者")).collect(Collectors.toList());
+        }
+        return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isDead && !gamePlayer.isNoCount && gamePlayer.getYourName().equals(ChatColor.GOLD + "預言者")).collect(Collectors.toList());
+    }
+
+    public Collection<GamePlayer> getReibais(boolean netabare) {
+        if (netabare) {
+            return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isNoCount && gamePlayer.getYourName().equals(ChatColor.DARK_AQUA + "霊媒師")).collect(Collectors.toList());
+        }
+        return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isDead && !gamePlayer.isNoCount && gamePlayer.getYourName().equals(ChatColor.DARK_AQUA + "霊媒師")).collect(Collectors.toList());
+    }
+
+    public Collection<GamePlayer> getWolfs(boolean netabare) {
+        if (netabare) {
+            return getGamePlayers().stream().filter(gamePlayer -> gamePlayer.isWolf && !gamePlayer.isNoCount).collect(Collectors.toList());
+        }
         return getGamePlayers().stream().filter(gamePlayer -> gamePlayer.isWolf && !gamePlayer.isDead && !gamePlayer.isNoCount).collect(Collectors.toList());
     }
 
-    public Collection<GamePlayer> getKyojin() {
-        return getGamePlayers().stream().filter(gamePlayer -> gamePlayer.isWolf && !gamePlayer.isDead && gamePlayer.isNoCount).collect(Collectors.toList());
+    public Collection<GamePlayer> getKyojin(boolean netabare) {
+        if (netabare) {
+            return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && gamePlayer.isNoCount).collect(Collectors.toList());
+        }
+        return getGamePlayers().stream().filter(gamePlayer -> !gamePlayer.isWolf && !gamePlayer.isDead && gamePlayer.isNoCount).collect(Collectors.toList());
     }
 
 

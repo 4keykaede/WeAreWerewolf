@@ -13,6 +13,7 @@ import java.util.Arrays;
 public class WWVillager extends GamePlayer {
 
     public Job job = Job.NORMAL;
+    public boolean useCommand = false;
 
     public WWVillager(Player player) {
         super(player);
@@ -30,7 +31,7 @@ public class WWVillager extends GamePlayer {
             player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GRAY + "あなたは" + ChatColor.GOLD + " 預言者 " + ChatColor.GRAY + "として選ばれました。");
             player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GRAY + "誰か一人の役職を知ることができます。");
             yourName = ChatColor.GOLD + "預言者";
-        }
+    }
         if (job == Job.REIBAI) {
             player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GRAY + "あなたは" + ChatColor.DARK_AQUA + " 霊媒師 " + ChatColor.GRAY + "として選ばれました。");
             player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GRAY + "既に死んでいる人の役職を一人だけ知ることができます。");

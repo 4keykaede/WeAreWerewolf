@@ -6,18 +6,18 @@ import network.kze.werewolf.game.player.WWKyojin;
 import network.kze.werewolf.game.player.WWVillager;
 import network.kze.werewolf.util.PlayerUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class GameTask {
 
     private final GameManager gameManager;
 
-    private int PRETIME = 10;
+    private int PRETIME = 20;
+    private int count = 0;
 
     public GameTask(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -33,13 +33,14 @@ public class GameTask {
 
         //準備期間
         if (gameManager.getGame().getPhase() == Game.Phase.PRESTATE) {
-            if (PRETIME == 5) {
+            if (PRETIME == 15) {
                 castingPlayer();
             }
 
             if (PRETIME == 0) {
                 Bukkit.getOnlinePlayers().forEach(players -> {
                     GameHelper.giveWeapon(players);
+                    giveSupportItem();
                 });
 
                 gameManager.getGame().setPhase(Game.Phase.PLAYING);
@@ -136,13 +137,47 @@ public class GameTask {
         });
     }
 
+    private void giveSupportItem() {
+        List<GamePlayer> gamePlayers = new ArrayList<>(gameManager.getGame().getGamePlayers());
+        Collections.shuffle(gamePlayers, new Random());
+        gamePlayers.forEach(gamePlayer -> {
+            ItemStack item = GameHelper.getSupportItem(count);
+            gamePlayer.getPlayer().getInventory().setItem(1, item);
+            count ++;
+        });
+        count = 0;
+    }
+
     private void villagersWin() {
         gameManager.getGame().setPhase(Game.Phase.ENDING);
         Bukkit.broadcastMessage("village Win");
+        showNetabare();
     }
 
     private void wolfsWin() {
         gameManager.getGame().setPhase(Game.Phase.ENDING);
         Bukkit.broadcastMessage("wolf win");
+        showNetabare();
+    }
+
+    private void showNetabare() {
+        List<String> villages = new ArrayList<>();
+        List<String> yogens = new ArrayList<>();
+        List<String> reibais = new ArrayList<>();
+        List<String> kyojins = new ArrayList<>();
+        List<String> wolfs = new ArrayList<>();
+        gameManager.getGame().getVillagers(true).forEach(village -> villages.add(village.getPlayer().getPlayerListName()));
+        gameManager.getGame().getYogens(true).forEach(yogen -> yogens.add(yogen.getPlayer().getPlayerListName()));
+        gameManager.getGame().getReibais(true).forEach(reibai -> reibais.add(reibai.getPlayer().getPlayerListName()));
+        gameManager.getGame().getWolfs(true).forEach(wolf -> wolfs.add(wolf.getPlayer().getPlayerListName()));
+        gameManager.getGame().getKyojin(true).forEach(kyojin -> kyojins.add(kyojin.getPlayer().getPlayerListName()));
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_PURPLE + "---=== " + ChatColor.LIGHT_PURPLE + "結果" + ChatColor.DARK_PURPLE + " ===--- ");
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.WHITE + "村人 : " + ChatColor.GREEN +  Arrays.toString(villages.toArray()));
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.WHITE + "預言者 : " + ChatColor.GREEN + Arrays.toString(yogens.toArray()));
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.WHITE + "霊媒師 : " + ChatColor.GREEN + Arrays.toString(reibais.toArray()));
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》");
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.WHITE + "狂人 : " + ChatColor.GREEN + Arrays.toString(kyojins.toArray()));
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.WHITE + "人狼 : " + ChatColor.GREEN + Arrays.toString(wolfs.toArray()));
+        Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_PURPLE + "---===   ===--- ");
     }
 }

@@ -15,6 +15,7 @@ public class WWJinro extends GamePlayer {
 
     private int barDelay = 15;
     private boolean showTip = false;
+    private boolean isUpdate = false;
 
     public WWJinro(Player player) {
         super(player);
@@ -38,11 +39,16 @@ public class WWJinro extends GamePlayer {
         } else {
             List<String> wolfs = new ArrayList<>();
             List<String> kyojins = new ArrayList<>();
-            plugin.getGameManager().getGame().getWolfs().forEach(wolf -> wolfs.add(wolf.getPlayer().getPlayerListName()));
-            plugin.getGameManager().getGame().getKyojin().forEach(kyojin -> kyojins.add(kyojin.getPlayer().getPlayerListName()));
+            plugin.getGameManager().getGame().getWolfs(true).forEach(wolf -> wolfs.add(wolf.getPlayer().getPlayerListName()));
+            plugin.getGameManager().getGame().getKyojin(true).forEach(kyojin -> kyojins.add(kyojin.getPlayer().getPlayerListName()));
 
-            PlayerUtil.sendActionBar(player, ChatColor.DARK_RED + "人狼" + Arrays.toString(wolfs.toArray()) + ChatColor.DARK_PURPLE + " 狂人" + Arrays.toString(kyojins.toArray()));
-            barDelay --;
+            String actionBar = ChatColor.DARK_RED + "人狼" + Arrays.toString(wolfs.toArray()) + ChatColor.DARK_PURPLE + " 狂人";
+            if (isUpdate) {
+                actionBar = actionBar + Arrays.toString(kyojins.toArray());
+            }
+            PlayerUtil.sendActionBar(player, actionBar);
+
+            barDelay--;
         }
 
         if (barDelay <= 0) {

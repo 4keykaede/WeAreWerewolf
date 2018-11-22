@@ -2,15 +2,23 @@ package network.kze.werewolf.commands;
 
 import network.kze.werewolf.Werewolf;
 import network.kze.werewolf.game.Game;
+import network.kze.werewolf.game.GameHelper;
 import network.kze.werewolf.game.player.GamePlayer;
 import network.kze.werewolf.game.player.WWVillager;
 import network.kze.werewolf.util.PlayerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WWCommand implements CommandExecutor {
 
@@ -41,13 +49,22 @@ public class WWCommand implements CommandExecutor {
             if (gamePlayer instanceof WWVillager) {
                 WWVillager villager = (WWVillager) gamePlayer;
                 if (villager.getJob() != WWVillager.Job.YOGEN) {
+                    player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "預言者のみ使用できるコマンドだ！");
                     return true;
                 }
 
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target == null || !plugin.getGameManager().getGame().isGamePlayer(target)) {
+                    player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "ターゲットが見つからなかった！");
                     return true;
                 }
+
+                if (villager.isUseCommand()) {
+                    player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "既にコマンドは使われている！");
+                    return true;
+                }
+                villager.setUseCommand(true);
+
                 player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + target.getName() + ChatColor.RED + " は " + plugin.getGameManager().getGame().getGamePlayer(target).getYourName());
             }
         }
@@ -61,15 +78,24 @@ public class WWCommand implements CommandExecutor {
             if (gamePlayer instanceof WWVillager) {
                 WWVillager villager = (WWVillager) gamePlayer;
                 if (villager.getJob() != WWVillager.Job.REIBAI) {
+                    player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "霊媒師のみ使用できるコマンドだ！");
                     return true;
                 }
 
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target == null || !plugin.getGameManager().getGame().isGamePlayer(target)) {
+                    player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "ターゲットが見つからなかった！");
                     return true;
                 }
 
                 GamePlayer targetPlayer = plugin.getGameManager().getGame().getGamePlayer(target);
+
+                if (villager.isUseCommand()) {
+                    player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "既にコマンドは使われている！");
+                    return true;
+                }
+
+                villager.setUseCommand(true);
                 if (targetPlayer.isDead) {
                     player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + target.getName() + ChatColor.RED + " は既に死んでいた！");
                     if (targetPlayer.isWolf) {
@@ -89,8 +115,8 @@ public class WWCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("test")) {
-            player.sendMessage("villager " + plugin.getGameManager().getGame().getVillagers().size());
-            player.sendMessage("wolfs " + plugin.getGameManager().getGame().getWolfs().size());
+            player.sendMessage("villager " + plugin.getGameManager().getGame().getVillagers(false).size());
+            player.sendMessage("wolfs " + plugin.getGameManager().getGame().getWolfs(false).size());
             Game game = plugin.getGameManager().getGame();
             player.sendMessage("Village " + game.getVillagerNum());
             player.sendMessage("Yogen " + game.getYogenNum());
@@ -99,8 +125,19 @@ public class WWCommand implements CommandExecutor {
             player.sendMessage("Jinro " + game.getJhinroNum());
         }
 
+        if (args[0].equalsIgnoreCase("test2")) {
+
+        }
+
+        if (args[0].equalsIgnoreCase("test3")) {
+            player.getInventory().setItem(0, GameHelper.ITEM_SPLASH);
+            player.getInventory().setItem(1, GameHelper.ITEM_LOD);
+            player.getInventory().setItem(2, GameHelper.ITEM_PICKAXE);
+        }
+
         if (args[0].equalsIgnoreCase("reset")) {
             plugin.getGameManager().resetGame();
+            Bukkit.getOnlinePlayers().forEach(resetPlayer -> resetPlayer.teleport(new Location(Bukkit.getWorld("world"), -104, 38, 693)));
         }
 
         if (args[0].equalsIgnoreCase("set")) {
@@ -130,6 +167,19 @@ public class WWCommand implements CommandExecutor {
                 return true;
             }
             return true;
+        }
+
+        if (args[0].equalsIgnoreCase("get")) {
+
+            if (args[1].equalsIgnoreCase("tool")) {
+                ItemStack tool = new ItemStack(Material.STICK);
+                ItemMeta toolMeta = tool.getItemMeta();
+                toolMeta.setDisplayName("スポーンポイント");
+                tool.setItemMeta(toolMeta);
+                player.getInventory().setItem(0, tool);
+                return true;
+            }
+
         }
 
         if (args[0].equalsIgnoreCase("start")) {
