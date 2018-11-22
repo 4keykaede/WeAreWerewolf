@@ -8,17 +8,17 @@ import network.kze.werewolf.game.player.WWVillager;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 @RequiredArgsConstructor
 public class GameListener implements Listener {
@@ -68,17 +68,27 @@ public class GameListener implements Listener {
                 return;
             }
 
-            if (villager.getJob() == WWVillager.Job.YOGEN) {
-
+            if (!villager.isUseCommand()) {
+                player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "コマンド使用後モンエナを飲むことができます。");
+                return;
             }
 
-            if (villager.getJob() == WWVillager.Job.REIBAI) {
-
+            if (villager.getJob() == WWVillager.Job.YOGEN || villager.getJob() == WWVillager.Job.REIBAI) {
+                villager.setUseCommand(true);
+                player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GOLD + "コマンドをもう一度使用できるようになった！");
+                event.getItem().setType(Material.AIR);
+                return;
             }
+            return;
         }
 
         if (gamePlayer instanceof WWJinro) {
-
+            WWJinro jhinro = (WWJinro) gamePlayer;
+            jhinro.setUpdate(true);
+            player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.GOLD + "狂人を特定した！");
+            event.getItem().setType(Material.AIR);
+            
+            return;
         }
 
         player.sendMessage(ChatColor.DARK_GREEN + "浪人 》" + ChatColor.DARK_RED + "預言者・霊媒師・人狼のみが使用できます！");

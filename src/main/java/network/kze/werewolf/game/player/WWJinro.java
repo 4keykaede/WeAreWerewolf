@@ -1,21 +1,19 @@
 package network.kze.werewolf.game.player;
 
-import network.kze.werewolf.game.GameHelper;
+import lombok.Setter;
 import network.kze.werewolf.util.PlayerUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class WWJinro extends GamePlayer {
 
     private int barDelay = 15;
     private boolean showTip = false;
-    private boolean isUpdate = false;
+    @Setter public boolean isUpdate = false;
 
     public WWJinro(Player player) {
         super(player);
